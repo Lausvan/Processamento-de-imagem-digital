@@ -1,10 +1,18 @@
 package view;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
+import javax.imageio.ImageIO;
+
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -26,6 +34,28 @@ public class PrincipalController {
 	Label lblG;
 	@FXML
 	Label lblB;
+	
+	@FXML 
+	TextField txtPctR;
+	@FXML 
+	TextField txtPctG;
+	@FXML 
+	TextField txtPctB;
+	
+	@FXML
+	Slider slider;
+	
+	@FXML
+	Slider adiSubSlider1;
+	
+	@FXML
+	Slider adiSubSlider2;
+
+	
+	@FXML RadioButton vizX;
+	@FXML RadioButton viz3;
+	@FXML RadioButton vizC;
+
 
 	private Image img1;
 	private Image img2;
@@ -98,4 +128,125 @@ public class PrincipalController {
 			e.printStackTrace();
 		}
 	}
+	
+	@FXML 
+	public void cinzaPonderada() {
+			String pctR = txtPctR.getText();
+			String pctG = txtPctG.getText();
+			String pctB = txtPctB.getText();
+			
+			if(pctR.equals("")) {
+				pctR = "0";
+			}
+			
+			if(pctG.equals("")) {
+				pctG = "0";
+			}
+			
+			if(pctB.equals("")) {
+				pctB = "0";
+			}
+			
+			int ipctR = Integer.parseInt(pctR);
+			int ipctG =  Integer.parseInt(pctG);
+			int ipctB =  Integer.parseInt(pctB);
+			
+			if((ipctR + ipctG + ipctB) > 100) {
+				return;
+			}
+
+			img3 = Pdi.cinzaMediaAritmética(img1, ipctR, ipctG, ipctB);
+			atualizaImagem3();
+	}
+	
+	public void initialize() {
+		setPropertiesSlider();
+	}
+
+	private void setPropertiesSlider() {
+		slider.setMin(0);
+		slider.setMax(250);
+		slider.setValue(125);
+		slider.setShowTickLabels(true);
+		slider.setShowTickMarks(true);
+		slider.setMajorTickUnit(50);
+		slider.setMinorTickCount(3);
+		slider.setBlockIncrement(10);
+		
+		adiSubSlider1.setMin(0);
+		adiSubSlider1.setMax(250);
+		adiSubSlider1.setValue(125);
+		adiSubSlider1.setShowTickLabels(true);
+		adiSubSlider1.setShowTickMarks(true);
+		adiSubSlider1.setMajorTickUnit(50);
+		adiSubSlider1.setMinorTickCount(3);
+		adiSubSlider1.setBlockIncrement(10);
+		
+		adiSubSlider2.setMin(0);
+		adiSubSlider2.setMax(250);
+		adiSubSlider2.setValue(125);
+		adiSubSlider2.setShowTickLabels(true);
+		adiSubSlider2.setShowTickMarks(true);
+		adiSubSlider2.setMajorTickUnit(50);
+		adiSubSlider2.setMinorTickCount(3);
+		adiSubSlider2.setBlockIncrement(10);
+		
+	}
+	
+	@FXML
+	public void limirizar() {
+		img3 = Pdi.limiarizacao(img1, slider.getValue()/100);
+		atualizaImagem3();
+	}
+	
+	@FXML
+	public void negativar() {
+		img3 = Pdi.negativacao(img1);
+		atualizaImagem3();
+	}
+	
+	@FXML
+	public void adicao() {
+		img3 = Pdi.adicao(img1, img2, adiSubSlider1.getValue(), adiSubSlider2.getValue());
+		atualizaImagem3();
+	}
+	
+	@FXML
+	public void subtracao() {
+		img3 = Pdi.subtracao(img1, img2);
+		atualizaImagem3();
+	}
+	
+	@FXML 
+	public void ruido() {
+		
+		int vizinho = 0;
+		
+		if (viz3.isSelected()) 
+			vizinho = 1;
+		else 
+			if (vizC.isSelected())
+				vizinho = 2;
+			else
+				if (vizX.isSelected())
+					vizinho = 3;
+		
+		img3 = Pdi.ruidos(img1, vizinho);
+		atualizaImagem3();
+	}
+	
+	@FXML
+	public void salvarImagem() throws IOException {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().add(new 
+				FileChooser.ExtensionFilter("PNG",".png"));
+		fileChooser.setTitle("Salvar Imagem");
+		File file = fileChooser.showSaveDialog(null); 
+		if (file != null) {
+			BufferedImage bfImf = SwingFXUtils.fromFXImage(img3, null);
+			ImageIO.write(bfImf, "png", file);
+		}
+	
+	}
+
 }
