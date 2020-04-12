@@ -8,7 +8,12 @@ import java.util.Objects;
 import javax.imageio.ImageIO;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Slider;
@@ -18,6 +23,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 public class PrincipalController {
 
@@ -60,6 +66,11 @@ public class PrincipalController {
 	private Image img1;
 	private Image img2;
 	private Image img3;
+	
+	int xi;
+	int yi;
+	int xf;
+	int yf;
 
 	@FXML
 	public void cinzaAritmetica() {
@@ -248,5 +259,54 @@ public class PrincipalController {
 		}
 	
 	}
+	
+	@FXML
+	public void MarcacaoMousePressed(MouseEvent evento) {
+		ImageView img = (ImageView)evento.getTarget();
+		if(img.getImage()!=null) {
+			 xi = (int)evento.getX();
+			 yi = (int)evento.getY();
+		}
+	}
+	
+	@FXML 	
+	public void MarcacaoMouseRelease(MouseEvent evento) {
+		ImageView img = (ImageView)evento.getTarget();
+		if(img.getImage()!=null) {
+			 xf = (int)evento.getX();
+			 yf = (int)evento.getY(); 
+			 img.setImage(Pdi.marcacao(img3, Math.min(xi, xf), Math.min(yi, yf), Math.max(xi, xf), Math.max(yi, yf)));				
+		}
+		
+	}
+	
+	@FXML
+	 public void abreHistograma(ActionEvent event) {
+		 try {
+			 Stage stage = new Stage();
+			 FXMLLoader loader = new FXMLLoader(getClass().getResource("Histograma.fxml"));
+			 Parent root = loader.load();
+			 stage.setScene(new Scene(root));
+			 stage.setTitle("Histograma");			 
+			 stage.initOwner(((Node) event.getSource()).getScene().getWindow());
+			 stage.show();
+			 
+			 HistogramaController controller = (HistogramaController)loader.getController();
+			 
+			 if(img1!=null) {
+				 Pdi.montaGrafico(img1, controller.grafico1);
+			 }
+			 if(img2!=null) {
+				 Pdi.montaGrafico(img2, controller.grafico2);
+			 }
+			 if(img3!=null) {
+				 Pdi.montaGrafico(img3, controller.grafico3);
+			 }
+			 
+			 
+		 } catch(Exception e) {
+			 e.printStackTrace();
+		 }
+	 }
 
 }
